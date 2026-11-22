@@ -22,6 +22,18 @@
  }
  const hero=$('demo-media').querySelector('video');
  const empty=$('demo-media').querySelector('.empty');
+ const quality=$('demo-quality');
+ let switchSource;
+ quality.addEventListener('change',()=>{
+  switchSource?.abort();
+  switchSource=new AbortController();
+  const at=hero.currentTime, resume=!hero.paused&&!hero.ended;
+  hero.addEventListener('loadedmetadata',()=>{
+   hero.currentTime=Math.min(at,hero.duration);
+   if(resume&&!document.hidden&&hero.getBoundingClientRect().bottom>0)hero.play().catch(()=>{});
+  },{once:true,signal:switchSource.signal});
+  hero.src=quality.value;hero.load();
+ });
  hero.addEventListener('error',()=>{empty.hidden=false;});
  hero.addEventListener('loadeddata',()=>{empty.hidden=true;});
  // One quiet entrance per section. No looping decorative motion, no scroll hijacking.

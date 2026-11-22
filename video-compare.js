@@ -19,17 +19,21 @@
   let clip=clips[0], mode="green", wanted=!matchMedia("(prefers-reduced-motion: reduce)").matches;
   let visible=false, loaded=false, busy=false, failed=false, run, draw=0, duration=0, split=50, dragging=null;
   const modes=[...player.querySelectorAll("[data-output]")];
+  const quality=get("quality");
+  const hasHD=()=>clip.w>1920||clip.h>1920;
+  const useHD=()=>hasHD()&&quality.value==="hd";
   const picks=clips.map(item=>{
     const b=document.createElement("button"), im=new Image();
     b.type="button";b.title=item.label;b.setAttribute("aria-label",item.label);
     im.alt="";im.src=derivatives+item.id+"/thumb.jpg";b.append(im);get("clips").append(b);
-    b.onclick=()=>{if(item!==clip||failed){clip=item;update(0);}};return b;
+    b.onclick=()=>{if(item!==clip||failed){clip=item;quality.value="hd";update(0);}};return b;
   });
   function describe(){
     picks.forEach((b,i)=>b.setAttribute("aria-pressed",String(clips[i]===clip)));
     modes.forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.output===mode)));
     get("tag").textContent=mode==="green"?"Green screen":"Alpha";
-    get("meta").textContent=clip.w+" × "+clip.h+" · "+Number(clip.fps.toFixed(2))+" fps";
+    quality.hidden=!hasHD();quality.options[1].textContent=clip.w===3840?"4K":"1440p";
+    get("meta").textContent=(useHD()?"1920 × 1080":clip.w+" × "+clip.h)+" · "+Number(clip.fps.toFixed(2))+" fps";
     player.style.setProperty("--ratio",clip.w/clip.h);
   }
   function playingUI(on){
@@ -69,10 +73,11 @@
     const later=setTimeout(()=>{if(!signal.aborted){status.textContent="Loading…";status.hidden=false;}},350);
     try{
       await Promise.all(pair.map(async(v,i)=>{
-        const url=i?clip[mode]:clip.input;
+        const channel=i?mode:"input";
+        const hd=useHD(),url=hd?"assets/hd/"+clip.id+"-"+channel+".mp4":clip[channel];
         if(v.getAttribute("src")!==url||retry){v.src=url;v.load();}
         await wait(v,"loadeddata",()=>v.readyState>=2,signal);
-        if(v.videoWidth!==clip.w||v.videoHeight!==clip.h)throw Error("Unmatched dimensions");
+        if(v.videoWidth!==(hd?1920:clip.w)||v.videoHeight!==(hd?1080:clip.h))throw Error("Unmatched dimensions");
       }));
       if(signal.aborted)return;
       if(Math.abs(master.duration-result.duration)>1.5/clip.fps)throw Error("Unmatched duration");
@@ -97,6 +102,7 @@
     }finally{clearTimeout(later);}
   }
   modes.forEach(b=>b.onclick=()=>{if(mode!==b.dataset.output||failed){mode=b.dataset.output;update();}});
+  quality.onchange=()=>update();
   play.onclick=()=>{wanted=!wanted||failed;update();};
   time.addEventListener("input",()=>update(Number(time.value)));
   function splitAt(n){

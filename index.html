@@ -49,7 +49,7 @@
 <h1 id="project-title"><picture><source media="(prefers-reduced-motion: reduce)" srcset="assets/snapmat-title-still.webp"><img width="1128" height="376" fetchpriority="high" src="assets/SnapMat_animated_transparent.webp" alt="SnapMat"></picture><span class="publication-subtitle" id="project-subtitle">Native-Resolution Video Matting via Context-Guided Sparse Refinement</span></h1>
 
 <div class="project-byline">
-<p class="authors" id="authors">Shijun Li* · Yixin Yang* · Yiheng Lin · Siyu Jiao · Zixin Ma · Yunchao Wei† · Yao Zhao†</p>
+<p class="authors" id="authors">Shijun Li* · Yixin Yang* · Yiheng Lin* · Siyu Jiao · Zixin Ma · Yunchao Wei† · Yao Zhao†</p>
 <p class="affiliations" id="affiliations">Beijing Jiaotong University</p>
 <p id="author-notes">* Equal contribution. † Corresponding authors.</p>
 <p class="venue" id="venue">Research manuscript · 2026</p>
@@ -60,7 +60,8 @@
 <main>
 <section class="section hero-media-section" id="demo"><div class="wrap">
 <h2 class="sr-only">视频样例</h2>
-<div class="demo-stage" id="demo-media"><video controls playsinline preload="metadata" width="3840" height="2160" aria-label="SnapMat demo video" src="5a9620de4961ca5d2447c5357be66d8e_raw.mp4" poster="assets/snapmat-demo-poster.jpg"></video><div class="empty" hidden><i data-lucide="film"></i><strong>演示视频未加载</strong></div></div>
+<div class="demo-stage" id="demo-media"><video controls playsinline preload="metadata" width="1920" height="1080" aria-label="SnapMat demo video" src="assets/hd/demo.mp4" poster="assets/snapmat-demo-poster.jpg"></video><div class="empty" hidden><i data-lucide="film"></i><strong>演示视频未加载</strong></div></div>
+<div class="hero-quality"><select id="demo-quality" aria-label="Demo video resolution" title="Video resolution"><option value="assets/hd/demo.mp4" selected>1080p</option><option value="5a9620de4961ca5d2447c5357be66d8e_raw.mp4">4K</option></select></div>
 </div></section>
 
 <section class="section" id="abstract" lang="en"><div class="wrap narrow">
@@ -108,7 +109,7 @@
       <input id="vc-time" aria-label="Video time" type="range" min="0" max="1" value="0" step="0.001">
       <span id="vc-clock">0:00 / 0:00</span>
       <button id="vc-full" type="button" aria-label="Enter fullscreen" title="Enter fullscreen"><i data-lucide="maximize"></i></button>
-    </div><span id="vc-meta"></span>
+    </div><select id="vc-quality" aria-label="Comparison video resolution" title="Video resolution"><option value="hd">1080p</option><option value="native">Original</option></select><span id="vc-meta"></span>
   </div>
   <div id="vc-clips" role="group" aria-label="Video samples"></div>
 </div></div></section>
