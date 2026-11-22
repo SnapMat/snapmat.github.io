@@ -40,14 +40,20 @@
     play.classList.toggle("playing",on);play.title=failed?"Retry":on?"Pause":"Play";play.setAttribute("aria-label",play.title);
   }
   function stop(){pair.forEach(v=>v.pause());result.playbackRate=1;cancelAnimationFrame(draw);playingUI(false);}
+  function notice(message,link=false){
+    status.textContent=message;status.hidden=!message;
+    if(link&&result.getAttribute("src")){
+      const a=document.createElement("a");a.href=result.src;a.textContent=mode==="green"?"Open green-screen video":"Open alpha video";
+      status.append(" ",a);
+    }
+  }
   function wait(v,event,test,signal){
     if(signal.aborted)return Promise.reject(signal.reason);
     if(test())return Promise.resolve();
     return new Promise((resolve,reject)=>{
-      const finish=err=>{clearTimeout(timer);v.removeEventListener(event,check);v.removeEventListener("error",error);
+      const finish=err=>{v.removeEventListener(event,check);v.removeEventListener("error",error);
         signal.removeEventListener("abort",cancel);err?reject(err):resolve();};
       const check=()=>{if(test())finish();},error=()=>finish(Error("Video unavailable")),cancel=()=>finish(signal.reason);
-      const timer=setTimeout(error,20000);
       v.addEventListener(event,check);v.addEventListener("error",error);signal.addEventListener("abort",cancel,{once:true});
       if(v.error)error();else check();
     });
@@ -61,49 +67,63 @@
     if(busy||master.paused||result.paused)return;
     clock();
     const drift=master.currentTime-result.currentTime;
-    if(!result.seeking){
-      if(Math.abs(drift)>Math.max(.09,2/clip.fps)){update(master.currentTime);return;}
-      result.playbackRate=Math.abs(drift)>.5/clip.fps?(drift>0?1.04:.96):1;
+    if(!result.seeking&&pair.every(v=>v.readyState>=3)){
+      if(Math.abs(drift)>Math.max(.15,3/clip.fps))result.currentTime=master.currentTime;
+      else result.playbackRate=Math.abs(drift)>.5/clip.fps?(drift>0?1.04:.96):1;
     }
     draw=requestAnimationFrame(tick);
   }
   async function update(at=master.currentTime){
-    run?.abort();run=new AbortController();const {signal}=run;
+    run?.abort();const attempt=run=new AbortController(),{signal}=attempt;
     const retry=failed;failed=false;busy=true;stop();describe();
-    const later=setTimeout(()=>{if(!signal.aborted){status.textContent="Loading…";status.hidden=false;}},350);
+    notice("");
+    const later=setTimeout(()=>{if(!signal.aborted)notice("Loading…");},350);
+    const slow=setTimeout(()=>{
+      if(signal.aborted)return;
+      attempt.abort();wanted=false;busy=false;failed=true;stop();
+      notice("Still loading. Tap Play to retry.",true);
+    },45000);
     try{
-      await Promise.all(pair.map(async(v,i)=>{
+      pair.forEach((v,i)=>{
         const channel=i?mode:"input";
         const hd=useHD(),url=hd?"assets/hd/"+clip.id+"-"+channel+".mp4":clip[channel];
+        v.preload="auto";
         if(v.getAttribute("src")!==url||retry){v.src=url;v.load();}
-        await wait(v,"loadeddata",()=>v.readyState>=2,signal);
-        if(v.videoWidth!==(hd?1920:clip.w)||v.videoHeight!==(hd?1080:clip.h))throw Error("Unmatched dimensions");
-      }));
+      });
+      // Mobile browsers may not fetch the first frame until play() runs in the tap handler.
+      const start=wanted&&visible&&!document.hidden;
+      const starts=start?pair.map(v=>v.play()):[];
+      await Promise.all([...starts,...pair.map(v=>wait(v,"loadedmetadata",()=>v.readyState>=1,signal))]);
       if(signal.aborted)return;
-      if(Math.abs(master.duration-result.duration)>1.5/clip.fps)throw Error("Unmatched duration");
+      if(start)playingUI(true);
       duration=Math.min(master.duration,result.duration);time.max=duration;time.step=1/clip.fps;
       const target=clamp(at,0,Math.max(0,duration-.5/clip.fps));
       await Promise.all(pair.map(async v=>{
         if(Math.abs(v.currentTime-target)>.25/clip.fps)v.currentTime=target;
-        await wait(v,"seeked",()=>!v.seeking&&v.readyState>=2,signal);
+        await wait(v,"seeked",()=>!v.seeking,signal);
       }));
       if(signal.aborted)return;
       loaded=true;clock();status.hidden=true;
-      if(wanted&&visible&&!document.hidden){
-        await Promise.all(pair.map(v=>v.play()));
-        if(signal.aborted)return;
-        playingUI(true);
+      if(start){
+        if(pair.some(v=>v.paused))throw Error("Paired playback interrupted");
       }
       busy=false;tick();
     }catch(e){
       if(signal.aborted)return;
-      busy=false;wanted=false;failed=e.name!=="NotAllowedError";stop();
-      status.textContent="Video unavailable. Press play to retry.";status.hidden=!failed;
-    }finally{clearTimeout(later);}
+      attempt.abort();busy=false;wanted=false;failed=e.name!=="NotAllowedError";stop();
+      const mediaError=pair.find(v=>v.error)?.error;
+      notice(!failed?"Tap Play to start the comparison.":mediaError?.code===2?"Network interrupted. Tap Play to retry.":
+        mediaError?.code===3||mediaError?.code===4?"This browser could not decode the video.":"Comparison interrupted. Tap Play to retry.",true);
+    }finally{clearTimeout(later);clearTimeout(slow);}
   }
   modes.forEach(b=>b.onclick=()=>{if(mode!==b.dataset.output||failed){mode=b.dataset.output;update();}});
   quality.onchange=()=>update();
-  play.onclick=()=>{wanted=!wanted||failed;update();};
+  play.onclick=()=>{
+    if(play.classList.contains("playing")||(wanted&&pair.every(v=>!v.paused&&v.readyState>=2))){
+      wanted=false;run?.abort();busy=false;stop();notice("");return;
+    }
+    wanted=true;update();
+  };
   time.addEventListener("input",()=>update(Number(time.value)));
   function splitAt(n){
     split=clamp(n,0,100);player.style.setProperty("--wipe",split+"%");
@@ -125,7 +145,12 @@
   document.addEventListener("fullscreenchange",()=>{full.title=document.fullscreenElement===player?"Exit fullscreen":"Enter fullscreen";full.setAttribute("aria-label",full.title);});
   pair.forEach(v=>{
     v.addEventListener("ended",()=>{if(!busy&&wanted&&visible)update(0);});
-    v.addEventListener("waiting",()=>{if(!busy&&wanted&&visible&&!v.seeking&&v.readyState<3)update();});
+    v.addEventListener("waiting",()=>{if(!busy&&wanted&&visible&&!v.seeking)notice("Buffering…");});
+    v.addEventListener("playing",()=>{if(!busy&&wanted&&pair.every(el=>!el.paused&&el.readyState>=3))notice("");});
+    v.addEventListener("error",()=>{
+      if(busy||!visible||!v.error)return;
+      wanted=false;failed=true;stop();notice(v.error.code===2?"Network interrupted. Tap Play to retry.":"Playback failed. Tap Play to retry.",true);
+    });
   });
   function visibility(){
     if(visible&&!document.hidden){update(loaded?master.currentTime:0);}

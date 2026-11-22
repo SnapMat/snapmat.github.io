@@ -12,6 +12,8 @@
 #vc-wipe span {position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:#071518;pointer-events:none;box-shadow:0 1px 6px #0005}
 #vc-wipe svg {width:20px}
 #vc-status {bottom:9px;left:50%;transform:translateX(-50%);text-align:center}
+#vc-status:has(a) {width:max-content;max-width:calc(100% - 20px)}
+#vc-status a {color:white;pointer-events:auto;text-decoration:underline;text-underline-offset:2px}
 .vc-controls,.vc-transport,.vc-modes,#vc-clips {display:flex;align-items:center}
 .vc-controls {gap:20px;min-height:60px;flex-wrap:wrap;padding-block:8px}
 .vc-modes {border:1px solid #425258;border-radius:5px;overflow:hidden}
