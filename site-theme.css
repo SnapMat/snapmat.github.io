@@ -1,0 +1,99 @@
+:root {
+  color-scheme: dark;
+  --night: #03050a;
+  --surface: #10151c;
+  --raised: #19212b;
+  --ink: #f4f8ff;
+  --muted: #a9b7ca;
+  --line: #303a47;
+  --accent: #32d6d3;
+  --accent-surface: color-mix(in srgb, var(--accent) 13%, var(--surface));
+  --accent-border: color-mix(in srgb, var(--accent) 45%, var(--line));
+  --blue: #83cee9;
+  --red: var(--accent);
+  background: var(--night);
+}
+body, main, .section, .section:nth-child(even), #efficiency, footer {
+  background: var(--night);
+  color: var(--ink);
+}
+.section :is(h2, h3), footer .footer-top, .editorial-fold > summary, .paper-table caption {
+  color: var(--ink);
+}
+.section :is(.caption, .section-note, .hero-media-bottom, .footnote, .native-attribution,
+  .native-help, .demo-warning, .race-progress-label, .small-meta, .fine-print, .race-clock,
+  .race-toolbar, .gallery-title, .gallery-nav, .panel-title, .panel-title span,
+  .race-card-head small, .transport .time, .gate-step span, .gate-step small), .paper-notes,
+  .editorial-fold, .editorial-fold > summary span, .editorial-fold > summary::after,
+  .source-disclosure p, .footer-top button, .race-controls > span:last-child {
+  color: var(--muted);
+}
+.abstract-text, .race-progress-label strong { color: #d1dae5; }
+.editorial-fold, .footer-top, .demo-warning strong, .gate-step, .gate-step.illustrative,
+  th, td { border-color: var(--line); }
+.source-disclosure a, .editorial-fold > summary:hover, .footer-top button[aria-pressed=true] {
+  color: var(--accent);
+}
+
+/* Keep original RGB, alpha and composited pixels intact, including transparent artwork. */
+.demo-stage, .demo-stage video, .showcase-panel, .showcase-panel video, .media-slot,
+.media-slot video, .race-media, .race-media video, .native-pair .detail-view, .wipe-stage,
+.gate-image, .thumb { background: var(--night); }
+.empty, .demo-stage .empty, .figure-slot, .gate-notice, pre, .segmented {
+  background: var(--surface); color: var(--muted);
+}
+.empty :is(svg, strong, p), .gate-notice, .demo-warning strong { color: var(--muted); }
+.showcase-panel .media-badge, .wipe-label {
+  background: rgb(3 5 10 / 88%); color: var(--ink);
+}
+main button, select, .race-toolbar select, .secondary-button, .detail-download, .gallery button, .gallery-nav button {
+  background: var(--surface); color: var(--ink); border-color: var(--line);
+}
+.segmented button, .hero-media-modes button { background: transparent; color: var(--muted); }
+.hero-media-modes button[aria-pressed=true], .segmented button[aria-pressed=true],
+.gallery button:is([aria-selected=true],[aria-pressed=true]), .detail-download:hover {
+  color: var(--accent); background: var(--accent-surface); border-color: var(--accent-border);
+}
+.primary-button { background: var(--accent-surface); color: var(--accent); border-color: var(--accent-border); }
+.secondary-button, .icon-button, .gallery-label, .gate-settings { color: var(--ink); }
+.section .race-card progress, .race-card progress::-webkit-progress-bar { background: var(--raised); }
+.showcase-panel .mode-switch { background: rgb(3 5 10 / 92%) !important; }
+.showcase-panel .mode-switch button { background: transparent; color: var(--muted) !important; }
+.showcase-panel .mode-switch button[aria-pressed=true] {
+  color: var(--accent) !important; background: var(--accent-surface) !important;
+}
+:is(main,footer) :focus-visible { outline-color: var(--accent); }
+
+.paper-table {
+  --table-heading: var(--raised);
+  --table-group: #121d27;
+  --table-emphasis: var(--accent-surface);
+  color: var(--ink); background: var(--night);
+}
+.paper-table tbody th { background: var(--night); }
+.paper-table tbody td { color: #d6dfea; }
+.paper-table td strong, .paper-table .paper-ours th[scope="row"] { color: var(--accent); }
+.paper-table td.fixed-grid { background: #10151b; color: #99a5b4; }
+.paper-table .paper-group th { background: var(--table-group); }
+
+#bibtex > .wrap { max-width: 960px; }
+#bibtex h2 { margin: 0 0 20px; text-align: center; font: 600 36px/1.2 Georgia, serif; letter-spacing: 0; }
+.citation-box { position: relative; }
+.citation-box pre {
+  margin: 0; padding: 22px 20px; max-width: 100%; overflow-x: auto;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+  color: var(--ink); white-space: pre; text-align: left; font: 14px/1.7 Consolas, monospace;
+}
+.citation-box code { font: inherit; }
+#citation-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+#citation-copy {
+  position: absolute; top: 8px; right: 8px; min-width: 60px; padding: 5px 10px;
+  border: 1px solid var(--line); border-radius: 5px; background: var(--raised);
+  color: var(--muted); font: 500 13px/1.5 system-ui, sans-serif; cursor: pointer;
+}
+#citation-copy:hover, #citation-copy:focus-visible { color: var(--ink); border-color: var(--accent); }
+@media (max-width: 600px) {
+  #bibtex h2 { font-size: 30px; }
+  .citation-box pre { padding: 18px 12px; font-size: 13px; }
+}
+.paper-table .paper-ours > * { background: var(--table-emphasis); }

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="SnapMat: Native-Resolution Video Matting via Context-Guided Sparse Refinement. Compare original footage, green-screen composites, and predicted alpha mattes." name="description"/>
+<title>SnapMat · 项目展示</title>
+<link href="style.css" rel="stylesheet"/>
+<script defer="" src="vendor/lucide.min.js"></script>
+<script defer="" src="content.js"></script>
+<script defer="" src="app.js"></script>
+<link href="minimal.css" rel="stylesheet"/>
+<link href="image-examples.css" rel="stylesheet"/>
+<link href="site-theme.css" rel="stylesheet"/>
+<link href="skin-rail.css" rel="stylesheet"/>
+<script defer="" src="minimal.js"></script>
+<script defer src="hhm2k-review/round2-candidates.js"></script>
+<script defer src="skin-rail.js"></script>
+<script defer src="image-viewer.js"></script>
+<link rel="stylesheet" href="gate-inspector.css">
+<script defer src="assets/gate-study/samples.js"></script>
+<script defer src="gate-inspector.js"></script>
+<link rel="stylesheet" href="video-compare.css">
+<script defer src="video-compare.js"></script>
+<link rel="stylesheet" href="speed-comparison.css">
+<script defer src="race-core.js"></script>
+<script defer src="assets/speed-study/solo-reveal.js"></script>
+<script defer src="speed-comparison.js"></script>
+<link rel="stylesheet" href="section-index.css">
+<script defer src="section-index.js"></script>
+</head>
+<body>
+
+<nav class="section-index" aria-label="Page sections" lang="en">
+  <button type="button" class="index-toggle" aria-expanded="false" aria-controls="section-list" aria-label="Page sections" title="Page sections"><i data-lucide="list"></i></button>
+  <ol id="section-list">
+    <li><a href="#demo" aria-current="location">Demo</a></li>
+    <li><a href="#abstract">Abstract</a></li>
+    <li><a href="#method">Method</a></li>
+    <li><a href="#speed-comparison">Speed</a></li>
+    <li><a href="#video">Video</a></li>
+    <li><a href="#image">Image</a></li>
+    <li><a href="#refinement-gate">Refinement gate</a></li>
+    <li><a href="#bibtex">BibTeX</a></li>
+  </ol>
+</nav>
+<header class="publication-header" id="top" lang="en">
+<h1 id="project-title"><picture><source media="(prefers-reduced-motion: reduce)" srcset="assets/snapmat-title-still.webp"><img width="1128" height="376" fetchpriority="high" src="assets/SnapMat_animated_transparent.webp" alt="SnapMat"></picture><span class="publication-subtitle" id="project-subtitle">Native-Resolution Video Matting via Context-Guided Sparse Refinement</span></h1>
+
+<div class="project-byline">
+<p class="authors" id="authors">Shijun Li* · Yixin Yang* · Yiheng Lin · Siyu Jiao · Zixin Ma · Yunchao Wei† · Yao Zhao†</p>
+<p class="affiliations" id="affiliations">Beijing Jiaotong University</p>
+<p id="author-notes">* Equal contribution. † Corresponding authors.</p>
+<p class="venue" id="venue">Research manuscript · 2026</p>
+</div>
+<div class="links" id="project-links" role="group" aria-label="Project resources"><a class="resource-link" href="https://github.com/karsaaaakkk" rel="noopener noreferrer" target="_blank">GitHub</a></div>
+
+</header>
+<main>
+<section class="section hero-media-section" id="demo"><div class="wrap">
+<h2 class="sr-only">视频样例</h2>
+<div class="demo-stage" id="demo-media"><video controls playsinline preload="metadata" width="3840" height="2160" aria-label="SnapMat demo video" src="5a9620de4961ca5d2447c5357be66d8e_raw.mp4" poster="assets/snapmat-demo-poster.jpg"></video><div class="empty" hidden><i data-lucide="film"></i><strong>演示视频未加载</strong></div></div>
+</div></section>
+
+<section class="section" id="abstract" lang="en"><div class="wrap narrow">
+<h2>Abstract</h2><p lang="en" class="abstract-text" id="abstract-text">High-resolution video matting requires fine-detail recovery and temporal consistency, yet faces high computational costs and limited supervision. We propose SnapMat (Sparse Native-resolution Alpha Prediction), a sparse refinement framework that separates target propagation from detail recovery. Given a first-frame target mask, we adapt SAM2 with continuous alpha supervision for temporal propagation and coarse alpha prediction on the backbone grid. DICE (Dense Image-Context Encoding) extracts low-resolution target and temporal context, which SHARP (Sparse High-resolution Alpha Residual Prediction) fuses with native-resolution RGB to predict alpha residuals in selected regions through two-dimensional sparse computation. Real-scene references guide coherent foreground–background generation, while generated RGBA layers provide foreground color and alpha. Compositing, review, and targeted correction yield REALM (REference-guided Alpha Layer Matting), with 10,054 image samples and 1,007 four-frame clips. SnapMat achieves leading results across multiple evaluation settings on YouTubeMatte, VideoMatte240K, and HHM2K, with 4K inference at 21.76 frames per second (FPS) and 2.11 GB of peak allocated GPU memory on an NVIDIA RTX 5090. Ablations and equal-source-frame comparisons validate the refinement design and the training value of generated images and four-frame clips.</p>
+</div></section>
+
+<section class="section research-method" id="method"><div class="wrap"><h2 lang="en">Method</h2><figure><div class="figure-slot" id="method-figure"><a class="architecture-link" href="assets/snapmat-architecture-v2.png" target="_blank" rel="noopener noreferrer" title="打开原尺寸架构图"><img src="assets/snapmat-architecture-v2.png" alt="SnapMat 架构图：SAM2 主干、DICE 上下文融合与 SHARP 稀疏精修" width="4430" height="2046"/></a></div><figcaption class="architecture-legend" lang="en" aria-label="Diagram legend"><span><i style="--swatch:#7ed0c6"></i>Negative</span><span><i style="--swatch:#f48d6e"></i>Positive</span><span><i style="--swatch:#bc5542"></i>Update sites (<i>G</i>)</span><span><i style="--swatch:#fbdbce"></i>Context halo (<i>&Omega;</i>)</span><span><i style="--swatch:#fff"></i>Inactive</span></figcaption></figure></div></section>
+
+<section class="section" id="speed-comparison" lang="en" aria-labelledby="sc-title"><div class="wrap">
+<h2 id="sc-title">Speed Comparison</h2>
+<div id="sc-player">
+  <div class="sc-heading"><strong>4K benchmark <span>/</span> RTX 5090</strong></div>
+  <video id="sc-film" muted playsinline preload="none" aria-hidden="true"></video>
+  <div id="sc-grid"></div>
+  <template id="sc-lane"><div class="sc-lane">
+    <div class="sc-nameplate"><h3></h3><div class="sc-metrics"><b class="sc-rate"></b><span class="sc-resolution"></span></div></div>
+    <div class="sc-screen"><canvas aria-hidden="true"></canvas><div class="sc-finish" hidden><small>Finished in</small><b></b></div></div>
+    <div class="sc-track"><i></i></div>
+    <div class="sc-stats"><span class="sc-count"></span></div>
+  </div></template>
+  <div class="sc-transport">
+    <button id="sc-play" type="button" class="awaiting-play" title="Play comparison" aria-label="Play comparison"><span class="sc-play-icon"><i data-lucide="play"></i><i data-lucide="pause"></i></span><span id="sc-play-label">Play comparison</span></button>
+    <button id="sc-replay" type="button" title="Replay from start" aria-label="Replay from start"><i data-lucide="rotate-ccw"></i></button>
+    <input id="sc-seek" type="range" min="0" max="1" value="0" step="0.0333333" aria-label="Benchmark replay time">
+    <span id="sc-clock">0:00 / 0:00</span>
+  </div>
+  <p id="sc-error" role="status" hidden>Video could not be loaded. Press play to retry.</p>
+</div></div></section>
+
+<section class="section" id="video" lang="en" aria-labelledby="video-title"><div class="wrap">
+<h2 id="video-title">VIDEO</h2>
+<div id="vc-player">
+  <div class="vc-stage"><div class="vc-frame" id="vc-frame">
+    <video muted playsinline preload="none" id="vc-input" aria-label="Original video"></video>
+    <video muted playsinline preload="none" id="vc-output" aria-label="SnapMat result"></video>
+    <span class="vc-tag vc-left">RGB</span><span class="vc-tag vc-right" id="vc-tag">Green screen</span>
+    <div id="vc-wipe" tabindex="0" role="slider" aria-label="RGB and SnapMat split" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+      <span><i data-lucide="arrow-left-right"></i></span>
+    </div>
+  </div><span role="status" id="vc-status" hidden></span></div>
+  <div class="vc-controls">
+    <div class="vc-modes" role="group" aria-label="Right side"><button type="button" data-output="green" aria-pressed="true">Green screen</button><button type="button" data-output="alpha" aria-pressed="false">Alpha</button></div>
+    <div class="vc-transport">
+      <button id="vc-play" type="button" aria-label="Play" title="Play"><i data-lucide="play"></i><i data-lucide="pause"></i></button>
+      <input id="vc-time" aria-label="Video time" type="range" min="0" max="1" value="0" step="0.001">
+      <span id="vc-clock">0:00 / 0:00</span>
+      <button id="vc-full" type="button" aria-label="Enter fullscreen" title="Enter fullscreen"><i data-lucide="maximize"></i></button>
+    </div><span id="vc-meta"></span>
+  </div>
+  <div id="vc-clips" role="group" aria-label="Video samples"></div>
+</div></div></section>
+
+<section class="section" id="image" lang="en" aria-labelledby="image-title"><div class="wrap">
+<h2 id="image-title">IMAGE</h2>
+<div class="compare-scroll"><div class="image-viewer" id="image-viewer">
+  <div class="compare-stage" id="image-stage">
+    <div class="compare-photo" id="compare-photo" data-example="hhm-050" style="--image-ratio:1.5">
+      <img id="compare-rgb" width="3240" height="2160" src="assets/image-examples/hhm-050-rgb.webp" alt="Loose hair: original RGB" loading="lazy" decoding="async">
+      <img id="compare-green" width="3240" height="2160" src="assets/image-studies/hhm-050-green.webp" alt="Loose hair: SnapMat green-screen composite" loading="lazy" decoding="async">
+      <div class="split-control" id="image-split" role="slider" tabindex="0" aria-label="RGB and SnapMat comparison" aria-orientation="horizontal" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+        <span class="split-rule"><span class="split-grip"><i data-lucide="arrow-left-right"></i></span></span>
+      </div>
+      <div class="lens-surface" id="lens-surface" hidden tabindex="0" role="group" aria-label="Green-screen detail. Move with the pointer or arrow keys; Escape to exit."><canvas id="image-lens" aria-hidden="true"></canvas></div>
+      <div id="detail-guides" role="group" aria-label="Magnify a detail" hidden></div>
+      <span class="compare-label rgb-label" aria-hidden="true">RGB</span><span class="compare-label mat-label" aria-hidden="true">SnapMat</span>
+    </div>
+    <div class="compare-tools">
+      <button type="button" id="lens-toggle" aria-label="Green-screen magnifier" title="Magnify green-screen detail" aria-controls="lens-surface" aria-pressed="false">
+        <i data-lucide="zoom-in"></i><i data-lucide="zoom-out"></i>
+      </button>
+      <div id="lens-coach" hidden>
+        <span id="lens-coach-text">Try the magnifier</span>
+        <button type="button" id="lens-coach-dismiss">Got it</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+<div class="image-picker" role="group" aria-label="Select an image" data-selection="hhm-050,25,hhm-094,15,17,22,portrait-3,27,28,30,35,36,38,39,41,53,56,59,60,73,79,83,135,154,159,162,164,168,143,72"></div>
+<p class="image-feedback" role="status" id="image-feedback"></p>
+</div></section>
+
+<section class="section" id="refinement-gate" lang="en" aria-labelledby="gate-heading"><div class="wrap gate-study">
+  <h2 id="gate-heading">Refinement gate</h2>
+  <div class="gs-intro"><p>Pick a point to compare the same detail before and after refinement.</p>
+    <div id="gs-samples" role="group" aria-label="Select a portrait"></div></div>
+  <div class="gs-layout">
+    <div class="gs-overview"><div class="gs-bar"><strong>Input RGB</strong><label><input id="gs-overlay" type="checkbox" checked> Gate overlay</label></div>
+      <div class="gs-stage"><div id="gs-photo" tabindex="0" role="group" aria-label="Inspection point. Click, drag, or use arrow keys.">
+        <img id="gs-rgb" alt="" draggable="false"><img id="gs-mask" alt="" draggable="false"><span id="gs-roi"></span><span id="gs-point"></span>
+      </div></div>
+    </div>
+    <div class="gs-details"><div class="gs-bar"><strong>Matched detail crops</strong><label>Zoom <select id="gs-zoom"><option value="3.2">3.2&times;</option><option value="6.4">6.4&times;</option><option value="12.8">12.8&times;</option></select></label></div>
+      <div class="gs-tiles">
+        <div><canvas data-layer="overlay" aria-label="RGB detail with optional gate overlay"></canvas><span id="gs-crop-label">Gate overlay</span></div>
+        <div><canvas data-layer="coarse" aria-label="Coarse alpha detail"></canvas><span>Coarse alpha</span></div>
+        <div><canvas data-layer="delta" aria-label="Signed alpha correction"></canvas><span>Signed correction</span></div>
+        <div><canvas data-layer="refined" aria-label="Refined alpha detail"></canvas><span>Refined alpha</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="gs-foot"><div><span class="gs-key"></span> <b id="gs-coverage"></b> of native pixels gated <span id="gs-position"></span></div>
+    <div class="gs-scale" aria-label="Signed correction: refined minus coarse alpha, clipped at minus and plus 0.25"><span>&Delta; alpha</span> &le; &minus;0.25 <i></i> &ge; +0.25</div></div>
+  <p id="gs-status" role="status"></p>
+</div></section>
+
+<section class="section" id="bibtex" lang="en" aria-labelledby="bibtex-title"><div class="wrap">
+  <h2 id="bibtex-title">BibTeX</h2>
+  <div class="citation-box">
+    <pre tabindex="0" aria-labelledby="bibtex-title"><code id="citation-entry"></code></pre>
+    <button type="button" id="citation-copy" aria-label="Copy BibTeX">Copy</button>
+    <span class="sr-only" id="citation-status" role="status"></span>
+  </div>
+</div></section>
+</main>
+</body>
+</html>

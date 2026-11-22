@@ -1,0 +1,40 @@
+.section-index {
+  --row: 36px;
+  position: fixed; z-index: 25; left: max(18px, calc(50% - 850px)); top: 50%;
+  transform: translateY(-50%); font: 12px/1.25 Consolas, monospace; color: #aab8c2;
+}
+.section-index ol { position: relative; margin: 0; padding: 0; list-style: none; }
+.section-index ol::before, .section-index ol::after {
+  content: ""; position: absolute; left: 8px; top: calc(var(--row) / 2); width: 2px;
+}
+.section-index ol::before { bottom: calc(var(--row) / 2); background: #37414c; }
+.section-index ol::after { height: calc(var(--step, 0) * var(--row)); background: var(--accent); }
+.section-index a {
+  display: flex; position: relative; z-index: 1; height: var(--row); align-items: center;
+  gap: 12px; color: inherit; text-transform: uppercase; text-decoration: none; white-space: nowrap;
+}
+.section-index a::before {
+  content: ""; width: 10px; height: 10px; margin-inline: 4px;
+  box-sizing: border-box; flex: none; border: 2px solid #82929f; border-radius: 50%;
+  background: var(--night); box-shadow: 0 0 0 4px var(--night);
+}
+.section-index a:hover, .section-index a:focus-visible, .section-index a[aria-current] { color: var(--ink); }
+.section-index a[aria-current]::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px var(--night), 0 0 0 5px #3e8e92; }
+.index-toggle { display: none; }
+@media(min-width:1000px) {
+  main { padding-left: clamp(0px, calc(1640px - 100%), 145px); }
+}
+@media(max-width:999px), (max-height:480px) {
+  .section-index { left: 8px; top: auto; bottom: max(10px, env(safe-area-inset-bottom)); transform: none; }
+  .index-toggle {
+    display: grid; place-items: center; width: 42px; height: 42px; padding: 0;
+    background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px;
+  }
+  .index-toggle svg { width: 19px; height: 19px; }
+  #section-list { display: none; }
+  .index-toggle[aria-expanded="true"] + #section-list {
+    display: block; position: absolute; bottom: 49px; left: 0; max-height: calc(100dvh - 75px); overflow: auto;
+    padding: 0 14px; background: var(--night); border: 1px solid var(--line); border-radius: 6px;
+  }
+  .section-index ol::before, .section-index ol::after { left: 22px; }
+}
