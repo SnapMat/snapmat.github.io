@@ -3,7 +3,7 @@
   const get=id=>document.getElementById("vc-"+id);
   const player=get("player"), master=get("input"), result=get("output"), pair=[master,result];
   const frame=get("frame"), wipe=get("wipe"), play=get("play"), time=get("time"), status=get("status");
-  const dir="videos/视频.zip/视频/视频/", derivatives="assets/video-studies/";
+  const dir="video/", derivatives="assets/video-studies/";
   const revised="assets/video-r2/";
   function newClip(id,label,w=3840,h=2160,fps=30){return {id,label,w,h,fps,revised:true,thumb:revised+id+".jpg"};}
   function legacy(id,folder,label,w,h,fps,input="original.mp4"){
