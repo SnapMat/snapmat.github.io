@@ -5,14 +5,14 @@
   const frame=get("frame"), wipe=get("wipe"), play=get("play"), time=get("time"), status=get("status");
   const dir="videos/视频.zip/视频/视频/", derivatives="assets/video-studies/";
   const revised="assets/video-r2/";
-  function newClip(id,label){return {id,label,w:3840,h:2160,fps:30,revised:true,thumb:revised+id+".jpg"};}
+  function newClip(id,label,w=3840,h=2160,fps=30){return {id,label,w,h,fps,revised:true,thumb:revised+id+".jpg"};}
   function legacy(id,folder,label,w,h,fps,input="original.mp4"){
     return {id,label,w,h,fps,input:dir+folder+"/"+input,green:dir+folder+"/green.mp4",alpha:derivatives+id+"/alpha.mp4",thumb:derivatives+id+"/thumb.jpg"};
   }
   const clips=[
     newClip("duet","Dance duet"),
     legacy("solo","跳舞2","Outdoor dance",864,1536,30,"reference.mp4"),
-    legacy("running","二人慢跑","Running duo",1920,1080,25),
+    newClip("running","Running duo",1920,1080,25),
     legacy("street","街舞","Street dance",1080,1920,25),
     newClip("basketball","Basketball"),newClip("dance","Dance solo")
   ];
@@ -88,7 +88,7 @@
     try{
       pair.forEach((v,i)=>{
         const channel=i?mode:"input";
-        const url=clip.revised?revised+clip.id+"-"+channel+"-"+(useHD()?"1080":"2160")+".mp4":clip[channel];
+        const url=clip.revised?revised+clip.id+"-"+channel+"-"+(hasHD()&&!useHD()?"2160":"1080")+".mp4":clip[channel];
         v.preload="auto";
         if(v.getAttribute("src")!==url||retry){v.src=url;v.load();}
       });
