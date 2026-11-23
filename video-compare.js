@@ -5,14 +5,16 @@
   const frame=get("frame"), wipe=get("wipe"), play=get("play"), time=get("time"), status=get("status");
   const dir="video/", derivatives="assets/video-studies/";
   const revised="assets/video-r2/";
-  function newClip(id,label,w=3840,h=2160,fps=30){return {id,label,w,h,fps,revised:true,thumb:revised+id+".jpg"};}
+  function newClip(id,label,prefix=revised+id+"-",thumb=revised+id+".jpg"){
+    return {id,label,w:3840,h:2160,fps:30,prefix,thumb};
+  }
   function legacy(id,folder,label,w,h,fps,input="original.mp4"){
     return {id,label,w,h,fps,input:dir+folder+"/"+input,green:dir+folder+"/green.mp4",alpha:derivatives+id+"/alpha.mp4",thumb:derivatives+id+"/thumb.jpg"};
   }
   const clips=[
     newClip("duet","Dance duet"),
     legacy("solo","跳舞2","Outdoor dance",864,1536,30,"reference.mp4"),
-    newClip("running","Running duo",1920,1080,25),
+    newClip("running","Running duo",dir+"二人慢跑/",dir+"二人慢跑/cover.jpg"),
     legacy("street","街舞","Street dance",1080,1920,25),
     newClip("basketball","Basketball"),newClip("dance","Dance solo")
   ];
@@ -88,7 +90,7 @@
     try{
       pair.forEach((v,i)=>{
         const channel=i?mode:"input";
-        const url=clip.revised?revised+clip.id+"-"+channel+"-"+(hasHD()&&!useHD()?"2160":"1080")+".mp4":clip[channel];
+        const url=clip.prefix?clip.prefix+channel+"-"+(useHD()?"1080":"2160")+".mp4":clip[channel];
         v.preload="auto";
         if(v.getAttribute("src")!==url||retry){v.src=url;v.load();}
       });
